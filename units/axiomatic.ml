@@ -1,6 +1,8 @@
 
 type stop = Stop
 type zero = Zero
+type one = One
+type ('a,'b) mult = Mult
 type 'a neg = Neg
 
 type ('a,'b) eq = Refl: ('a,'a) eq
@@ -8,6 +10,57 @@ type ('a,'b) eq = Refl: ('a,'a) eq
 let cast (type a b) (Refl:(a,b) eq) (x:a) = (x:b)
 let (%) (type a b c) (Refl:(a,b) eq) (Refl:(b,c) eq) =  (Refl:(a,c) eq)
 let rev (type a b) (Refl: (a,b) eq) = (Refl : (b,a) eq)
+
+module type group_axioms = sig
+  type 'a t
+  type ('a,'b) eqt = ('a t, 'b t) eq
+  val inv: ('a * 'a neg, zero) eqt
+  val assoc: ('a * ('b * 'c),  ('a * 'b) * 'c) eqt
+  val e: (zero * 'a, 'a) eqt
+  val com: ('a * 'b, 'b * 'a) eqt
+end
+
+module type eq_monad =
+  sig
+    type ('a,'b) eqt
+    val pure: ('a,'b) eq -> ('a,'b) eqt
+    val bind:  (('a,'b) eq -> ('c,'d) eqt) -> ('a,'b) eqt -> ('c,'d) eqt
+    val (>>=): ('a,'b) eqt -> (('a,'b) eq -> ('c,'d) eqt) -> ('c,'d) eqt
+  end
+
+
+module Z: sig
+
+  type +'a t
+
+  val zero: zero t
+  val one: one t
+  val ( + ) : 'a t -> 'b t -> ('a * 'b) t
+  val ( - ) : 'a t -> 'b t -> ('a * 'b neg) t
+
+  module Axioms: sig
+    include group_axioms with type 'a t := 'a t
+    include eq_monad with type ('a,'b) eqt := ('a,'b) eqt
+  end
+end = struct
+  type 'a t = int
+  let zero = 0
+  let one = 1
+  let ( + ) = ( + )
+  let ( - ) = ( - )
+
+   module Axioms = struct
+     type ('a,'b) eqt = ('a t, 'b t) eq
+     let bind _f _x = Refl
+     let pure _ = Refl
+     let (>>=) x f = bind f x
+     let inv = Refl
+     let assoc = Refl
+     let e = Refl
+     let com = Refl
+   end
+
+end
 
 module Units : sig
   type +'a t
@@ -23,17 +76,10 @@ module Units : sig
   val ( / ) : 'a t -> 'b t -> ('a * 'b neg) t
 
   module Axioms: sig
-    type ('a,'b) eqt = ('a t, 'b t) eq
-
-    val inv: ('a * 'a neg, zero) eqt
-    val assoc: ('a * ('b * 'c),  ('a * 'b) * 'c) eqt
-    val e: (zero * 'a, 'a) eqt
-    val com: ('a * 'b, 'b * 'a) eqt
-
+    include group_axioms with type 'a t := 'a t
     val pure: ('a,'b) eq -> ('a,'b) eqt
     val bind:  (('a,'b) eq -> ('c,'d) eqt) -> ('a,'b) eqt -> ('c,'d) eqt
     val (>>=): ('a,'b) eqt -> (('a,'b) eq -> ('c,'d) eqt) -> ('c,'d) eqt
-
   end
 
   module Make(): sig
