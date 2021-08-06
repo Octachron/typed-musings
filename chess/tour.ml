@@ -86,19 +86,31 @@ type 'x right =
     <up:'up; mid:'mid; down:'down; border:'b>
 
 type ('a,'b) move =
-  | Up: ('a, 'a up mark) move
-  | Down: ('a, 'a down mark) move
-  | Left:('a, 'a left mark) move
-  | Right:('x, 'x right mark) move
-
+  | UUL: ('a,'a up up left mark) move
+  | UUR: ('a,'a up up right mark) move
+  | LLU: ('a,'a left left up mark) move
+  | LLD: ('a,'a left left down mark) move
+  | DDL: ('a,'a down down left mark) move
+  | DDR: ('a,'a down down right mark) move
+  | RRU: ('a,'a right right up mark) move
+  | RRD: ('a,'a right right down mark) move
 
 
 type half = <left:b; mid:o; right:o * (o * b)>
+
+
+type vhalf = <left:b; mid:x; right:x * (x * b)>
 
 type start =
   <up  : halfbline dup;
    mid : half;
    down: half dup;
+   border:halfbline
+  >
+type tour =
+  <up  : halfbline dup;
+   mid : vhalf;
+   down: vhalf dup;
    border:halfbline
   >
 
@@ -110,14 +122,26 @@ type _ path =
 let ( + ) l x = x :: l
 
 let test =
-  []
-  + Right + Right
-  + Down
-  + Left + Left
-  + Down
-  + Right + Right
-  + Down
-  + Left + Left
+  [] + RRD + LLD + RRD + UUL
+
+let any: type a. a path -> unit = function
+  | [DDR] -> ()
+  | [UUR;DDR] -> ()
+  | [UUL;DDR] -> ()
+  | [_;DDR] -> .
+  | [RRD] -> ()
+  | [LLU;RRD] -> ()
+  | [LLD;RRD] -> ()
+  | [DDL;RRD] -> ()
+  | [_;RRD] -> .
+  | [_] -> .
+  | _ -> ()
+
+let tour: tour path -> unit = function
+  | [_] -> .
+  | [_;_] -> .
+  | _ -> ()
+
 (*
 let slow (type a): a path -> unit = function
   | [_;_;_;
