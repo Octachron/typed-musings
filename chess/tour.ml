@@ -173,16 +173,3 @@ let tour: 'a. (start,tour) path -> 'a = function
      _;_;_;
      _;_;_] -> .
   | _ -> .
-
-(*
-let slow (type a): a path -> unit = function
-  | [_;_;_;
-     _;_;_;
-     _;_;_;
-     _;_;_;_
-    ]-> .
-  | _ -> ()
-*)
-(*
-let err = [] :: Up
-*)
