@@ -2,7 +2,11 @@ type 'a line = 'a
   constraint 'a =
     <left:_; mid:_;right:_>
 
-type o = Empty
+type 'a case = Case
+type g = Ongoing
+type d = Done
+type o = g case
+type s = d case
 type b = Border
 type x = Visited
 
@@ -17,7 +21,7 @@ type fline = o hline
 
 
 type 'a board = 'a
-  constraint 'a = <up:_; mid:_; down:_; border:_>
+  constraint 'a = <up:_; mid:_; down:_; border:_; status:_>
 
 type ('p) append = 'a * ('b * 'c)
   constraint 'p = ('a*'b) * 'c
@@ -41,49 +45,57 @@ type 'x mark =
   <up:'up;
    mid:<left:'l;mid:x;right:'r>;
    down:'down;
-   border:'b>
+   border:'b;
+   status:'st
+  >
   constraint
     'x =
   <up:'up;
-   mid:<left:'l;mid:o;right:'r>;
+   mid:<left:'l;mid:'st case;right:'r>;
    down:'down;
-   border:'b>
+   border:'b;
+   status:g
+  >
 
 type 'x up =
   <up: ('ur * 'inf) append;
    mid:'u;
    down: 'm * ('d1 * 'd2);
    border:'inf;
+   status:g;
   >
   constraint 'x =
-    <up:'u * 'ur; mid:'m; down: 'd1 * ('d2 * _); border:'inf>
+    <up:'u * 'ur; mid:'m; down: 'd1 * ('d2 * _); border:'inf; status:g>
 
 type 'x down =
   <up: 'm * ('u1 * 'u2);
    mid:'d;
    down: ('dr * 'inf) append;
    border:'inf;
+   status:g;
   >
   constraint 'x =
-    <up:'u1 * ('u2 * _); mid:'m; down: 'd * 'dr; border:'inf>
+    <up:'u1 * ('u2 * _); mid:'m; down: 'd * 'dr; border:'inf; status:g>
 
 type 'x left =
       <up:'up move_left_all;
        mid:'mid move_left;
        down:'down move_left_all;
-       border: 'b move_left
+       border: 'b move_left;
+       status:g;
       >
   constraint 'x =
-     <up:'up; mid:'mid; down:'down; border:'b>
+     <up:'up; mid:'mid; down:'down; border:'b; status:g;>
 
 type 'x right =
   <up:'up move_right_all;
    mid:'mid move_right;
    down:'down move_right_all;
    border: 'b move_right;
+   status:g;
   >
   constraint 'x =
-    <up:'up; mid:'mid; down:'down; border:'b>
+    <up:'up; mid:'mid; down:'down; border:'b;status:g>
 
 type ('a,'b) move =
   | UUL: ('a,'a up up left mark) move
@@ -97,21 +109,23 @@ type ('a,'b) move =
 
 
 type half = <left:b; mid:o; right:o * (o * b)>
-
-
+type shalf = <left:b; mid:d case; right:o * (o * b)>
 type vhalf = <left:b; mid:x; right:x * (x * b)>
+
 
 type start =
   <up  : halfbline dup;
-   mid : half;
+   mid : shalf;
    down: half dup;
-   border:halfbline
+   border:halfbline;
+   status:g;
   >
 type tour =
   <up  : halfbline dup;
    mid : vhalf;
    down: vhalf dup;
-   border:halfbline
+   border:halfbline;
+   status:d;
   >
 
 type _ path =
@@ -124,13 +138,27 @@ let ( + ) l x = x :: l
 let test =
   [] + RRD + LLD + RRD + UUL
 
+let t = [] + DDR + UUR
+
 let any: type a. a path -> unit = function
   | [DDR] -> ()
-  | [UUR;DDR] -> ()
   | [UUL;DDR] -> ()
+  | [_;UUL;DDR] -> .
+  | [UUR;DDR] -> ()
+  | [LLD; UUR; DDR] -> ()
+  | [DDR; LLD; UUR; DDR] -> ()
+  | [UUR; DDR; LLD; UUR; DDR] -> ()
+  | [LLU; UUR; DDR; LLD; UUR; DDR] -> ()
+  | [LLD; UUR; DDR; LLD; UUR; DDR] -> ()
+  | [_;UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; DDR; LLD; UUR; DDR] -> .
+  | [RRD; LLD; UUR; DDR] -> ()
+  | [_; LLD; UUR; DDR] -> .
+  | [_; UUR; DDR] -> .
   | [_;DDR] -> .
   | [RRD] -> ()
   | [LLU;RRD] -> ()
+  | [_;LLU;RRD] -> .
   | [LLD;RRD] -> ()
   | [DDL;RRD] -> ()
   | [_;RRD] -> .
