@@ -140,30 +140,161 @@ let test =
 
 let t = [] + DDR + UUR
 
-let any: type a. a path -> unit = function
-  | [DDR] -> ()
-  | [UUL;DDR] -> ()
+type 'a res =
+  | Yes: tour res
+  | No : _ res
+
+let any: type a. a path -> s res = function
+  | [DDR] -> No
+  | [UUL;DDR] -> No
   | [_;UUL;DDR] -> .
-  | [UUR;DDR] -> ()
-  | [LLD; UUR; DDR] -> ()
-  | [DDR; LLD; UUR; DDR] -> ()
-  | [UUR; DDR; LLD; UUR; DDR] -> ()
-  | [LLU; UUR; DDR; LLD; UUR; DDR] -> ()
-  | [LLD; UUR; DDR; LLD; UUR; DDR] -> ()
-  | [_;UUR; DDR; LLD; UUR; DDR] -> .
+  | [UUR;DDR] -> No
+  | [LLD; UUR; DDR] -> No
+  | [DDR; LLD; UUR; DDR] -> No
+  | [UUR; DDR; LLD; UUR; DDR] -> No
+  | [LLU; UUR; DDR; LLD; UUR; DDR] -> No
+  | [_;LLU; UUR; DDR; LLD; UUR; DDR] -> .
+  | [LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [UUR;LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [DDR; UUR;LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [_; DDR; UUR;LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; UUR;LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_;LLD; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; DDR; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; UUR;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [RRU;DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [UUL; RRU;DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> No
+  | [_;UUL; RRU;DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; RRU;DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_;DDL; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; UUL; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_; RRD;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [_;LLD; UUR; DDR; LLD; UUR; DDR] -> .
+  | [ _ ;UUR; DDR; LLD; UUR; DDR] -> .
   | [_; DDR; LLD; UUR; DDR] -> .
-  | [RRD; LLD; UUR; DDR] -> ()
+  | [RRD; LLD; UUR; DDR] -> No
+  | [UUL; RRD; LLD; UUR; DDR] -> No
+  | [DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [LLU; RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [_; LLU; RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [DDL; RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [_; DDL; RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [_; RRU; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [UUL; RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [DDL; UUL; RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> No
+  | [_; DDL; UUL; RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [_; UUL; RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [_; RRD; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [_; DDL; UUL; RRD; LLD; UUR; DDR] -> .
+  | [_; UUL; RRD; LLD; UUR; DDR] -> .
+  | [LLD; RRD; LLD; UUR; DDR] -> No
+  | [UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [UUR; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [_; UUR; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [LLU; RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [_; LLU; RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [DDL; RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> No
+  | [_; DDL; RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_; RRU; LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_;LLU; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_; DDR; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_; UUR; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_; LLD; RRD; LLD; UUR; DDR] -> .
+  | [_; RRD; LLD; UUR; DDR] -> .
   | [_; LLD; UUR; DDR] -> .
   | [_; UUR; DDR] -> .
   | [_;DDR] -> .
-  | [RRD] -> ()
-  | [LLU;RRD] -> ()
+  | [RRD] -> No
+  | [LLU;RRD] -> No
   | [_;LLU;RRD] -> .
-  | [LLD;RRD] -> ()
-  | [DDL;RRD] -> ()
+  | [LLD;RRD] -> No
+  | [UUR; LLD;RRD] -> No
+  | [DDR; UUR; LLD;RRD] -> No
+  | [LLD; DDR; UUR; LLD;RRD] -> No
+  | [UUR; LLD; DDR; UUR; LLD;RRD] -> No
+  | [DDR; UUR; LLD; DDR; UUR; LLD;RRD] -> No
+  | [_; DDR; UUR; LLD; DDR; UUR; LLD;RRD] -> .
+  | [_; UUR; LLD; DDR; UUR; LLD;RRD] -> .
+  | [_; LLD; DDR; UUR; LLD;RRD] -> .
+  | [LLU; DDR; UUR; LLD;RRD] -> No
+  | [DDR; LLU; DDR; UUR; LLD;RRD] -> No
+  | [_; DDR; LLU; DDR; UUR; LLD;RRD] -> .
+  | [RRU; LLU; DDR; UUR; LLD;RRD] -> No
+  | [DDL; RRU; LLU; DDR; UUR; LLD;RRD] -> No
+  | [UUL; DDL; RRU; LLU; DDR; UUR; LLD;RRD] -> No
+  | [_; UUL; DDL; RRU; LLU; DDR; UUR; LLD;RRD] -> .
+  | [_; DDL; RRU; LLU; DDR; UUR; LLD;RRD] -> .
+  | [_; RRU; LLU; DDR; UUR; LLD;RRD] -> .
+  | [_; LLU; DDR; UUR; LLD;RRD] -> .
+  | [_;DDR; UUR; LLD;RRD] -> .
+  | [_; UUR; LLD;RRD] -> .
+  | [RRD; LLD;RRD] -> No
+  | [UUL; RRD; LLD;RRD] -> No
+  | [DDL; UUL; RRD; LLD;RRD] -> No
+  | [RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [UUL; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [_; UUL; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [DDR; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [_; DDR; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [DDL; RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [UUL; DDL; RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> No
+  | [_; UUL; DDL; RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; DDL; RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; RRU; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; LLU; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; RRU; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; DDL; UUL; RRD; LLD;RRD] -> .
+  | [_; UUL; RRD; LLD;RRD] -> .
+  | [_; RRD; LLD;RRD] -> .
+  | [_;LLD;RRD] -> .
+  | [DDL; RRD] -> No
+  | [UUL; DDL; RRD] -> No
+  | [RRU; UUL; DDL; RRD] -> No
+  | [DDL; RRU; UUL; DDL; RRD] -> No
+  | [UUL; DDL; RRU; UUL; DDL; RRD] -> No
+  | [_; UUL; DDL; RRU; UUL; DDL; RRD] -> .
+  | [_; DDL; RRU; UUL; DDL; RRD] -> .
+  | [_; RRU; UUL; DDL; RRD] -> .
+  | [RRD; UUL; DDL; RRD] -> No
+  | [LLD; RRD; UUL; DDL; RRD] -> No
+  | [UUR; LLD; RRD; UUL; DDL; RRD] -> No
+  | [DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> No
+  | [LLU; DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> No
+  | [UUR; LLU; DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> No
+  | [_; UUR; LLU; DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> .
+  | [_; LLU; DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> .
+  | [_; DDR; UUR; LLD; RRD; UUL; DDL; RRD] -> .
+  | [_; UUR; LLD; RRD; UUL; DDL; RRD] -> .
+  | [_; LLD; RRD; UUL; DDL; RRD] -> .
+  | [UUL; RRD; UUL; DDL; RRD] -> No
+  | [DDL; UUL; RRD; UUL; DDL; RRD] -> No
+  | [RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> No
+  | [UUL; RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> No
+  | [DDL; UUL; RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> No
+  | [_; DDL; UUL; RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> .
+  | [_; UUL; RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> .
+  | [_; RRD; DDL; UUL; RRD; UUL; DDL; RRD] -> .
+  | [_; DDL; UUL; RRD; UUL; DDL; RRD] -> .
+  | [_; UUL; RRD; UUL; DDL; RRD] -> .
+  | [_; RRD; UUL; DDL; RRD] -> .
+  | [_; UUL; DDL; RRD] -> .
+  | [_; DDL; RRD] -> .
   | [_;RRD] -> .
   | [_] -> .
-  | _ -> ()
+  | _ -> assert false
 
 let tour: tour path -> unit = function
   | [_] -> .
